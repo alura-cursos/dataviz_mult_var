@@ -364,3 +364,52 @@ p
 plot_scatter_mt_ch <- p
 plot_scatter_mt_ch
 
+##### 6. GRÁFICO DE LINHA ####
+
+##### 6.1 GRÁFICO DE LINHA COM MEDIAS DAS NOTAS POR ANO ####
+
+media_anos <- enem %>% filter(!is.na(NOTA_CIENCIAS_HUMANAS) & !is.na(NOTA_CIENCIAS_NATUREZA) &
+                                !is.na(NOTA_MATEMATICA) & !is.na(NOTA_LINGUAGENS_CODIGOS) & 
+                                !is.na(NOTA_REDACAO)) %>% 
+              group_by(ANO) %>% 
+              summarise(media_cn = mean(NOTA_CIENCIAS_NATUREZA), media_ch = mean(NOTA_CIENCIAS_HUMANAS),
+                                          media_mt = mean(NOTA_MATEMATICA), media_lc = mean(NOTA_LINGUAGENS_CODIGOS),
+                                          media_red = mean(NOTA_REDACAO))
+View(media_anos)
+
+## GRÁfico de linhas com média de notas por ano
+ggplot(data = media_anos) + 
+  geom_line(aes(x = ANO, y = media_cn), color = "green") +
+  geom_line(aes(x = ANO, y = media_ch), color = "blue")
+
+## fazendo uma transposicao no conjunto de dados
+media_anos_2 <- melt(data = media_anos,id.vars = 'ANO')
+
+View(media_anos_2)
+
+plot_line_notas <- ggplot(data = media_anos_2) + 
+  geom_line(aes(x = ANO, y = value, color = variable))
+
+plot_line_notas
+
+##### 6.2 Personalizando Gráfico de linhas (plot_line_notas) ####
+
+## adicionando pontos nas coordenadas exatas
+p <- plot_line_notas + ggtitle('Média Nota por Matéria') + ylab("Média") +
+  geom_point(aes(ANO, value, color = variable), size = 3)
+
+## inserindo labels (media) em cada ponto
+p <- p + geom_text(aes(x = ANO, y = value, color = variable,
+                       label = round(value,digits = 2), # definindo o texto
+                       hjust = -0.15, #posição horizonta (eixo x) do texto,
+                       vjust = 0.2
+)#fim aes()
+)#fim geom_text
+
+## Alterando título e nomes na legenda 
+p <- p + scale_color_discrete(name = 'Matérias', labels = c("Ciênc. Natureza","Ciênc. Humanas","Matemát.","Letras/Códig.","Redação")) +
+  theme_bw()
+
+plot_line_notas <- p
+plot_line_notas
+

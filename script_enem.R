@@ -413,3 +413,40 @@ p <- p + scale_color_discrete(name = 'Matérias', labels = c("Ciênc. Natureza",
 plot_line_notas <- p
 plot_line_notas
 
+##### 7. GRÁFICO DE BOLHAS ####
+
+##### 7.1 GRÁFICO DE BOLHAS MEDIAS NOTAS MT, CH, REDACAO/UF_PROVA ####
+
+##filtrando registros que tem valores NA nas colunas das NOTAS e IDADE, e filtrando IDADE maior que 14,
+## selecionando apenas algumas UF_PROVA, e calculando média das NOTAS por UF
+notas_matematica_redacao <- enem %>% 
+                            filter(!is.na(NOTA_MATEMATICA) & !is.na(NOTA_CIENCIAS_HUMANAS) & !is.na(NOTA_REDACAO) & 
+                                   !is.na(IDADE) & IDADE > 17 & UF_PROVA %in% c('CE','DF','MG','RS')) %>%
+                              group_by(IDADE,UF_PROVA) %>% 
+                              summarise(media_nota_matematica = mean(NOTA_MATEMATICA),
+                                        media_nota_ciencias_humanas = mean(NOTA_CIENCIAS_HUMANAS),
+                                        #media_nota_lc = mean(NOTA_LINGUAGENS_CODIGOS),
+                                        media_nota_reda = mean(NOTA_REDACAO))
+
+##GRÁfico de bolha por IDADE, media NOTA_MATEMATICA e media_redacao
+plot_bolhas_uf_notas <- ggplot(data = notas_matematica_redacao) + 
+                          geom_point(aes(x = media_nota_ciencias_humanas, y = media_nota_matematica,color = UF_PROVA,size = media_nota_reda), alpha = .5)
+
+plot_bolhas_uf_notas
+
+##### 7.2 Personalizando Gráfico de bolhas (plot_bolhas_uf_notas) ####
+
+## alterando rótulos eixos e legenda
+p <- plot_bolhas_uf_notas + ggtitle("Médias Matemát, CH e redação")+
+      xlab('Média Nota Ciênc. Hum.') + ylab('Média Nota Matemát.') +
+      labs(color = 'UF Prova',size = 'Média Nota Redação')
+
+## alterando layout gráfico
+p <- p + theme_bw() + theme(legend.position = 'bottom')
+
+## alterando posição da legenda
+p
+
+plot_bolhas_uf_notas <- p
+plot_bolhas_uf_notas
+

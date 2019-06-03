@@ -450,3 +450,43 @@ p
 plot_bolhas_uf_notas <- p
 plot_bolhas_uf_notas
 
+##### 8. GRÁFICO DE CAIXA (BOXPLOT) ####
+
+##### 8.1 BOXPLOT PARA NOTA_REDACAO/UF_PROVA ####
+
+## boxplot NOTA_REDACAO geral (com erro)
+ggplot(data = enem) + 
+  geom_boxplot(aes(y = NOTA_REDACAO))
+
+## filrando registros coluna NOTA_REDACAO com NA
+notas_redacao_uf <- enem %>% 
+                      filter(UF_PROVA!= '' & !is.na(NOTA_REDACAO) )
+
+## boxplot NOTA_REDACAO por UF_PROVA
+plot_box_uf_redacao <- ggplot(data = notas_redacao_uf) + 
+                        geom_boxplot(aes(x = UF_PROVA,y = NOTA_REDACAO))
+plot_box_uf_redacao
+
+##### 8.2 Personalizando Gráfico boxplot (plot_box_uf_redacao) ####
+dados <- plot_box_uf_redacao$data
+
+dados <- dados %>%
+          mutate(filial = if_else(UF_PROVA %in% c('CE','DF','MG','RS'), T, F )) %>%
+          select_(.dots = c("UF_PROVA","NOTA_REDACAO", "filial"))
+
+## destacando alguns estados, e mudando a cor e tamanho dos outliers
+plot_box_uf_redacao
+p <- ggplot(data = dados)  + 
+      geom_boxplot(aes(x = UF_PROVA, y = NOTA_REDACAO,fill = filial), outlier.colour = 'red',outlier.size = 3.5)
+
+## alterando rótulos X e Y, e layout 
+p <- p + xlab('UF Prova') + ylab('Nota Redação') + 
+  theme_bw()
+
+## destacando UFs que a instituição tem filiais e removendo legenda
+p <- p + scale_fill_manual(name = '',values = c('chocolate3','chartreuse3'), labels = c('Sem Filial','Com Filial'))
+
+plot_box_uf_redacao <- p
+plot_box_uf_redacao
+
+

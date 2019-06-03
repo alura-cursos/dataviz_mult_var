@@ -297,3 +297,70 @@ p + geom_text(aes(label = round(media,digits = 2), # definindo o texto
 plot_piram_idade <- p
 plot_piram_idade
 
+##### 5. GRÁficos de pontos (scatter plot) ####
+
+##### 5.1 GRÁFICO SCATTER IDADE/MEDIA NOTA ####
+
+##filtrando registros que tem número na coluna NOTA_CIENCIAS_HUMANAS
+notas_ciencias_humanas <- enem %>% 
+                            filter(!is.na(NOTA_CIENCIAS_HUMANAS) & !is.na(IDADE) & IDADE > 17)
+
+##calculando media da NOTA_CIENCIAS_HUMANAS por IDADE 
+notas_ciencias_humanas_idade <- notas_ciencias_humanas %>% 
+                                  group_by(IDADE) %>% 
+                                  summarise(media_nota_ciencias_humanas = mean(NOTA_CIENCIAS_HUMANAS))
+
+##grafico de pontos para IDADE e media da NOTA_CIENCIAS_HUMANAS
+ggplot(data = notas_ciencias_humanas_idade) + 
+  geom_point(aes(x = IDADE, y = media_nota_ciencias_humanas))
+
+
+#### ---------------------------#
+
+## NOTA_MATEMATICA
+##filtrando registros que tem número na coluna NOT_CN
+notas_mt <- enem %>% 
+              filter(!is.na(NOTA_MATEMATICA) & !is.na(IDADE) & IDADE > 17)
+
+##calculando media da NOTA_CIENCIAS_HUMANAS por IDADE 
+notas_matematica_idade <- notas_mt %>% 
+  group_by(IDADE) %>% 
+  summarise(media_nota_matematica = mean(NOTA_MATEMATICA))
+
+##grafico de pontos para IDADE e media da NOTA_MATEMATICA
+ggplot(data = notas_matematica_idade) + 
+  geom_point(aes(x = IDADE, y = media_nota_matematica))
+
+
+
+##### 5.2 GRÁFICO SCATTER IDADE/MEDIA NOTA - II ####
+View(notas_ciencias_humanas_idade)
+View(notas_matematica_idade)
+
+## merge data frame pelas linhas 
+notas_ciencias_humanas_matematica_idade <- merge(notas_ciencias_humanas_idade,notas_matematica_idade,by = 'IDADE',all = T)
+
+#fazendo uma transposição linhas x colunas da tabela
+#install.packages("reshape2")
+library(reshape2)
+notas_ciencias_humanas_matematica_idade <- melt(notas_ciencias_humanas_matematica_idade,id.vars = 'IDADE')
+
+plot_scatter_mt_ch <- ggplot(data = notas_ciencias_humanas_matematica_idade) + 
+  geom_point(aes(IDADE, value,color = variable))
+
+plot_scatter_mt_ch
+
+##### 5.3 Personalizando Gráficos de pontos (plot_scatter_mt_ch) ####
+
+p <- plot_scatter_mt_ch + ggtitle('Média Notas por Idade e Matéria') + xlab('Idade') + ylab('Nota (média)')
+
+##alterando layout do gráfico
+p <- p + theme_bw()
+
+## alterando título e rótulos da legenda
+p <- p + scale_color_manual(name = 'Matéria',values = c('blue','red'), labels = c('Ciência\nHumanas','Matemática'))
+p
+
+plot_scatter_mt_ch <- p
+plot_scatter_mt_ch
+

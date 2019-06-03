@@ -131,3 +131,91 @@ summary(enem$NOTA_LINGUAGENS_CODIGOS)
 summary(enem$NOTA_MATEMATICA)
 
 str(enem)
+
+##### 3. GRÁFICO DE COLUNAS ####
+
+##### 3.1 GRÁFICO DE SEXO E TIPO_LINGUA ####
+
+##grafico de barra de quantidade de registros por TIPO_LINGUA
+ggplot(data = enem) + 
+  geom_bar(aes(x = TIPO_LINGUA), stat = 'count')
+
+##desabilitando notação científica
+options(scipen = 9999)
+
+##excluindo registros que possuem '.' na coluna TIPO_LINGUA
+tp_lingua_sexo <- enem %>% 
+                    filter(TIPO_LINGUA != '.') %>% 
+                    select_(.dots = c('SEXO','TIPO_LINGUA'))
+
+##grafico de barra de quantidade de registros por SEXO/TIPO_LINGUA com barras sobrepostas
+ggplot(data = tp_lingua_sexo) + 
+  geom_bar(aes(x = SEXO, fill = TIPO_LINGUA), stat = 'count')
+
+
+##grafico de colunas sobre a quantidade de registros por SEXO/TIPO_LINGUA com barras ao lado
+plot_idioma_sexo <- ggplot(data = tp_lingua_sexo) + 
+                      geom_bar(aes(x = SEXO, fill = TIPO_LINGUA), stat = 'count',position =  position_dodge())
+
+plot_idioma_sexo
+
+##### 3.2 Personalizando Gráficos de Colunas (plot_idioma_sexo) ####
+
+## inserindo título e alterando rótulos dos eixos X e Y
+p <- plot_idioma_sexo + 
+  ggtitle("Idioma por Sexo") +
+  ylab("Quantidade") + xlab("Sexo")
+p
+
+## alterando título legenda e cor layout do gráfico
+p <- p + theme_linedraw() + 
+  theme(plot.title = element_text(hjust = 0.5))
+p
+
+plot_idioma_sexo <- p
+
+plot_idioma_sexo
+
+##### 3.3 GRÁFICO COLUNA DAS COLUNAS UF_PROVA E SITUACAO_CONCLUSAO ####
+
+## GRÁfico de colunas para UF_PROVA
+ggplot(data = enem) + geom_bar(aes(x = UF_PROVA))
+
+## eliminando registros que possuem vazio na coluna UF_PROVA
+uf_prova <- enem %>% 
+              filter(UF_PROVA != '') %>% 
+              select_(.dots = c('UF_PROVA','SITUACAO_CONCLUSAO'))
+
+## simulando erro no AES(x)
+ggplot(data = uf_prova) + 
+  geom_bar(aes(x = uf_prova))
+
+## grafico de barras UF_PROVA/SITUACAO_CONCLUSAO
+ggplot(data = uf_prova) + 
+  geom_bar(aes(x = UF_PROVA,fill = SITUACAO_CONCLUSAO))
+
+
+## grafico de colunas da coluna UF_PROVA/SITUACAO_CONCLUSAO COM FACET_GRID
+plot_uf_conclusao <- ggplot(data = uf_prova) + 
+                      geom_bar(aes(x = UF_PROVA,fill = SITUACAO_CONCLUSAO),position = position_dodge()) +
+                      facet_grid(SITUACAO_CONCLUSAO~.)
+
+plot_uf_conclusao
+
+##### 3.4 Personalizando Gráficos de Colunas (plot_uf_conclusao) ####
+
+## inserindo título, alterando rótulos eixos X e Y
+p <- plot_uf_conclusao + 
+      ggtitle("Situação Escolar por Estado ") + 
+      ylab("Quantidade") + xlab("Estado")
+p
+
+## alterando título da legenda e cor layout do gráfico
+ p + theme_linedraw() + 
+     labs(fill = 'Situação') + 
+     theme(plot.title = element_text(hjust = 0.5))
+
+plot_uf_conclusao <- p
+
+plot_uf_conclusao
+

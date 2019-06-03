@@ -219,3 +219,81 @@ plot_uf_conclusao <- p
 
 plot_uf_conclusao
 
+##### 4. GRÁFICO DE BARRAS (HORIZON) E PIRAMIDE####
+
+##### 4.1 GRÁfico de barras MEDIA IDADE POR UF_PROVA ####
+
+##VERIFICANDO COLUNA IDADE
+summary(enem$IDADE)
+
+## FILTRANDO REGISTROS COM PROBLEMA NA COLUNA IDADE
+idade_uf <- enem %>% 
+  filter(!is.na(IDADE) )
+  
+summary(idade_uf$IDADE)
+
+## FILTRANDO REGISTROS COM PROBLEMA NA COLUNA UF_PROVA selecionando apenas as colunas UF_PROVA, IDADE
+idade_uf <- idade_uf %>% 
+            filter(UF_PROVA != '') %>% 
+            select_(.dots = c('UF_PROVA','SEXO','IDADE'))
+
+## calculando media idade por UF_PROVA e salvando em um novo conjunto de dados
+media_idade_uf <- idade_uf %>%
+                  group_by(UF_PROVA) %>%
+                  summarise(media = mean(IDADE))
+
+## media idade por UF sem ordenação
+ggplot(data = media_idade_uf) + 
+  geom_bar(aes(x = UF_PROVA, y = media), position = position_dodge(), stat = 'identity') + 
+  coord_flip()
+
+## media idade por UF com ordenação
+ggplot(data = media_idade_uf) + geom_bar(aes(x = reorder(UF_PROVA,media), y = media), position = position_dodge(), stat = 'identity') + 
+                      coord_flip()
+
+##### 4.2 GRÁfico de barras (PIRAMIDE) MEDIA IDADExSEXO/UF_PROVA ####
+
+## calculando media idade por UF_PROVA e SEXO e salvando novo conj de dados
+media_idade_sexo_uf <- idade_uf %>%
+                        group_by(UF_PROVA,SEXO) %>%
+                        summarise(media = mean(IDADE))
+
+## media idade por SEXO/UF 
+ggplot(data = media_idade_sexo_uf,aes(x = UF_PROVA, y = media,fill = SEXO) ) + 
+  geom_bar(position = position_dodge(), stat = 'identity') + 
+  coord_flip()
+
+## media idade por SEXO/UF no formato 'piramide'
+plot_piram_idade <- ggplot(data = media_idade_sexo_uf,
+                           aes(x = reorder(UF_PROVA,-media), y = ifelse(SEXO =='MASCULINO', -media,media),fill = SEXO)) + 
+                      geom_bar( stat = 'identity') + 
+                      coord_flip() + 
+                      scale_y_continuous(labels = abs)
+
+plot_piram_idade
+
+##### 4.3 Personalizando Gráficos de barras (plot_piram_idade) ####
+
+p <- plot_piram_idade + ggtitle("Media de Idade por UF e Sexo") + 
+      ylab("Média Idade") + xlab("Estado") + 
+      theme_bw() + 
+      theme(plot.title = element_text(hjust = 0.5))
+
+## definindo cores para cada tipo de categoria (masculino e feminino)
+p <- p + scale_fill_manual(values = c("hotpink","dodgerblue3"))
+p
+
+## inserindo rótulos nas barras 
+#p <- 
+p + geom_text(aes(label = round(media,digits = 2), # definindo o texto
+                       hjust = 0.5 #posição horizonta (eixo x) do texto
+                      ), 
+                      size = 4.5, # tamanho do texto
+                      colour = 'black', # cor do texto
+                      fontface = 'bold' # tipo do texto
+                      )
+
+
+plot_piram_idade <- p
+plot_piram_idade
+

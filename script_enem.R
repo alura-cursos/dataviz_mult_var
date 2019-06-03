@@ -490,3 +490,45 @@ plot_box_uf_redacao <- p
 plot_box_uf_redacao
 
 
+##### 9. COMBINANDO GRÁFICO ####
+
+##### 9.1 COMBINANDO GRÁFICO BARRAS COM LIMITES DE ERRO ####
+media_redacao <- enem %>% 
+                  filter(UF_PROVA != '' & !is.na(NOTA_REDACAO) ) %>%
+                         #& !is.na(NOTA_CIENCIAS_HUMANAS) & !is.na(NOTA_CIENCIAS_HUMANAS) & !is.na(NOTA_LINGUAGENS_CODIGOS) & !is.na(NOTA_MATEMATICA)) %>%
+                  mutate(media_nacional = mean(NOTA_REDACAO)) %>%
+                  group_by(UF_PROVA,media_nacional) %>% 
+                  summarise(media_uf = mean(NOTA_REDACAO))
+
+plot_bar_erro <- ggplot(data = media_redacao,aes(x = reorder(UF_PROVA,media_uf), y = media_uf)) +
+                  geom_errorbar(aes(ymin=media_nacional/2, ymax = media_nacional),size = 1) +
+                  geom_bar(stat = 'identity') +
+                  coord_flip()
+
+plot_bar_erro
+
+
+
+##### 9.1 Personalizando Gráfico barras com valor de 'erro' (plot_bar_erro) ####
+
+## acessando os dados que montam o gráfico
+dados <- plot_bar_erro$data
+dados
+
+## criando nova coluna para indicar se a UF_PROVA faz parte das unidades da instituição 
+dados <- dados %>%
+          mutate(filial = if_else(UF_PROVA %in% c('CE','DF','MG','RS'), T, F ))
+View(dados)
+
+## plotando o gráfico novamente alterando rótulos, título...
+p <- ggplot(data = dados,aes(x = reorder(UF_PROVA,media_uf), y = media_uf)) +
+  geom_errorbar(aes(ymin=media_nacional/2, ymax = media_nacional),size = 0.8) +
+  geom_bar(aes(fill = filial),stat = 'identity') +
+  coord_flip() + 
+  guides(fill=FALSE) +
+  ggtitle('Média Nota Redação por UF') + xlab('UF Prova') + ylab('Média Redacao') +
+  theme_bw()
+
+plot_bar_erro <- p
+plot_bar_erro
+

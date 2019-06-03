@@ -532,3 +532,76 @@ p <- ggplot(data = dados,aes(x = reorder(UF_PROVA,media_uf), y = media_uf)) +
 plot_bar_erro <- p
 plot_bar_erro
 
+##### 10 Inserindo todos os gráficos em uma única janela ####
+
+##### 10.1 Configurando o layout da página ####
+plot_idioma_sexo
+plot_uf_conclusao
+plot_piram_idade
+plot_scatter_mt_ch
+plot_line_notas
+plot_bolhas_uf_notas 
+plot_box_uf_redacao
+plot_bar_erro
+
+library(gridExtra)
+library(grid)
+
+## inserindo todos os gráficos na mesma página (visualização ruim)
+grid.arrange(plot_idioma_sexo,plot_uf_conclusao,plot_piram_idade,plot_scatter_mt_ch,plot_line_notas,plot_bolhas_uf_notas ,plot_box_uf_redacao,plot_bar_erro)
+
+
+##### 10.2 Inserindo gráficos na página configurada ####
+
+## criando layout com 2 linhas e 4 colunas
+lay <- rbind(c(1,2,3,4),
+             c(5,6,7,8))
+lay
+
+grid.arrange(plot_idioma_sexo,plot_uf_conclusao,
+             plot_piram_idade,plot_scatter_mt_ch,
+             plot_line_notas,plot_bolhas_uf_notas,
+             plot_box_uf_redacao,plot_bar_erro,
+             layout_matrix = lay)
+
+
+## criando layout com 2 linhas e 2 colunas e mesclando colunas
+lay <- rbind(c(1,2),
+             c(3,3))
+lay
+
+grid.arrange(plot_box_uf_redacao, plot_scatter_mt_ch, plot_line_notas, layout_matrix = lay)
+
+
+## plotagem simulando erro
+grid.arrange(plot_box_uf_redacao,plot_scatter_mt_ch,
+             plot_line_notas,plot_idioma_sexo,
+             plot_piram_idade,plot_bar_erro,
+             layout_matrix = lay)
+
+grid.arrange(plot_box_uf_redacao,plot_scatter_mt_ch,
+             plot_line_notas,plot_idioma_sexo,
+             plot_piram_idade,plot_bar_erro)
+
+## criando layout com 4 linhas e 2 colunas e mesclando colunas
+lay <- rbind(c(1,2),
+             c(3,3),
+             c(4,5),
+             c(6,6))
+lay
+grid.arrange(plot_box_uf_redacao,plot_scatter_mt_ch,
+             plot_line_notas,plot_idioma_sexo,
+             plot_piram_idade,plot_bar_erro,
+             layout_matrix = lay)
+
+
+## criando layout com 2 linhas e 2 colunas e mesclando colunas
+lay <- rbind(c(1,1),
+             c(2,3))
+
+grid.arrange(plot_line_notas,
+             plot_box_uf_redacao,plot_bar_erro,
+             layout_matrix = lay)
+
+
+
